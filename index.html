@@ -18,9 +18,9 @@
     h1 { font-size: 22px; margin: 0 0 8px; }
     p { margin: 8px 0 14px; line-height: 1.5; color: rgba(232,238,252,0.85); }
     label { display: block; margin: 14px 0 8px; font-weight: 600; }
-    select, button {
+    select, input, button {
       width: 100%;
-      padding: 12px 12px;
+      padding: 12px;
       border-radius: 12px;
       border: 1px solid rgba(255,255,255,0.18);
       background: rgba(0,0,0,0.25);
@@ -28,13 +28,7 @@
       font-size: 15px;
       outline: none;
     }
-    button {
-      margin-top: 12px;
-      background: rgba(99, 102, 241, 0.9);
-      border: 0;
-      cursor: pointer;
-      font-weight: 700;
-    }
+    button { margin-top: 12px; background: rgba(99, 102, 241, 0.9); border: 0; cursor: pointer; font-weight: 700; }
     button:hover { filter: brightness(1.05); }
     .result {
       margin-top: 16px;
@@ -45,51 +39,35 @@
     }
     .result strong { font-size: 18px; }
     .muted { color: rgba(232,238,252,0.7); font-size: 13px; margin-top: 10px; }
-    .danger {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 14px;
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.25);
-    }
-    .row { display: flex; gap: 10px; margin-top: 10px; }
-    .row button { margin-top: 0; background: rgba(255,255,255,0.12); font-weight: 600; }
-    .row button.primary { background: rgba(99, 102, 241, 0.9); }
     code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 8px; }
   </style>
 </head>
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>🎁 Gift Shuffler</h1>
+      <h1>🎁 Gift Shuffler (Hash-based)</h1>
       <p>
-        Step 1: Select <b>your name</b>.<br/>
-        Step 2: Tap <b>Reveal</b> to see who you should gift.<br/>
-        Your assignment will stay the same on this device.
+        Select <b>your name</b> and reveal your giftee.<br/>
+        The pairing is generated from a <b>seed</b> (hash), so it looks shuffled but stays consistent.
       </p>
+
+      <label for="seed">Seed (change once to reshuffle, then keep fixed)</label>
+      <input id="seed" value="gift-2025" />
 
       <label for="me">Choose your name</label>
       <select id="me"></select>
 
-      <button id="reveal" class="primary">Reveal my assigned person</button>
+      <button id="reveal">Reveal</button>
 
       <div id="out"></div>
 
-      <div class="row">
-        <button id="copyLink">Copy link for my name</button>
-        <button id="reset">Reset on this device</button>
-      </div>
-
       <div class="muted">
-        Tip: Share a link like <code>?me=Rishikesh</code> so your friend lands with their name preselected.
+        Share the same site + same seed with everyone. Example seed: <code>gift-2025</code>
       </div>
-
-      <div class="danger muted" id="warn" style="display:none;"></div>
     </div>
   </div>
 
 <script>
-/** ✅ YOUR 6 NAMES **/
 const NAMES = [
   "Duckchin",
   "Dheeksha",
@@ -99,13 +77,7 @@ const NAMES = [
   "Mohini"
 ];
 
-/**
- * Optional: change seed to change the whole pairing.
- * Keep it constant after sharing the site.
- */
-const SEED_PHRASE = "gift-2025-duckchin-group";
-
-/** Seeded PRNG helpers */
+// --- Seeded shuffle helpers (hash -> PRNG) ---
 function xmur3(str) {
   let h = 1779033703 ^ str.length;
   for (let i = 0; i < str.length; i++) {
@@ -138,20 +110,15 @@ function seededShuffle(arr, seedStr) {
   return a;
 }
 
-/**
- * Create a 1-to-1 mapping by making a single cycle:
- * mapping[name] = next name in shuffled order (wrap-around)
- * => unique, and nobody (normally) gets themselves.
- */
-function buildMapping(names) {
-  let perm = seededShuffle(names, SEED_PHRASE);
-
-  let mapping = {};
+// Build a unique 1-to-1 mapping using a single cycle from the shuffled list
+function buildMapping(seedStr) {
+  const perm = seededShuffle(NAMES, seedStr);
+  const mapping = {};
   for (let i = 0; i < perm.length; i++) {
     mapping[perm[i]] = perm[(i + 1) % perm.length];
   }
 
-  // Safety fix if any self-assignment occurs (very unlikely)
+  // Safety: ensure no one maps to self (extremely unlikely with cycle, but kept anyway)
   for (let i = 0; i < perm.length; i++) {
     const n = perm[i];
     if (mapping[n] === n) {
@@ -164,31 +131,11 @@ function buildMapping(names) {
   return mapping;
 }
 
-const MAPPING = buildMapping(NAMES);
-
 const meSelect = document.getElementById("me");
+const seedInput = document.getElementById("seed");
 const out = document.getElementById("out");
-const warn = document.getElementById("warn");
 
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-
-function getParam(name) {
-  const url = new URL(window.location.href);
-  return url.searchParams.get(name);
-}
-function setParam(name, value) {
-  const url = new URL(window.location.href);
-  url.searchParams.set(name, value);
-  history.replaceState(null, "", url.toString());
-}
-
-function storageKey(person) {
-  return `gift_shuffle_assignment_${SEED_PHRASE}_${person}`;
-}
-
-function populate() {
+function populateNames() {
   meSelect.innerHTML = "";
   for (const n of NAMES) {
     const opt = document.createElement("option");
@@ -196,77 +143,31 @@ function populate() {
     opt.textContent = n;
     meSelect.appendChild(opt);
   }
+}
 
-  const pre = getParam("me");
-  if (pre && NAMES.includes(pre)) meSelect.value = pre;
-  setParam("me", meSelect.value);
+function escapeHtml(s) {
+  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function reveal() {
-  warn.style.display = "none";
-  warn.textContent = "";
-
+  const seed = seedInput.value.trim() || "gift-2025";
   const me = meSelect.value;
 
-  // Persist assignment for this device (per selected name)
-  const key = storageKey(me);
-  let assigned = localStorage.getItem(key);
-  if (!assigned) {
-    assigned = MAPPING[me];
-    localStorage.setItem(key, assigned);
-  }
-
-  // Optional warning if same device revealed multiple names
-  const allKeys = Object.keys(localStorage).filter(k => k.startsWith(`gift_shuffle_assignment_${SEED_PHRASE}_`));
-  if (allKeys.length > 1) {
-    warn.style.display = "block";
-    warn.textContent =
-      "Note: This device has revealed assignments for multiple names. " +
-      "If you’re sharing a phone, use Reset first.";
-  }
+  const mapping = buildMapping(seed);
+  const assigned = mapping[me];
 
   out.innerHTML = `
     <div class="result">
       You are <strong>${escapeHtml(me)}</strong> ✅<br/>
       You should gift: <strong>${escapeHtml(assigned)}</strong> 🎁
-      <div class="muted">Same device + same name = same result every time.</div>
-    </div>
-  `;
-}
-
-function resetDevice() {
-  const prefix = `gift_shuffle_assignment_${SEED_PHRASE}_`;
-  for (const k of Object.keys(localStorage)) {
-    if (k.startsWith(prefix)) localStorage.removeItem(k);
-  }
-  out.innerHTML = "";
-  warn.style.display = "none";
-}
-
-async function copyLinkForName() {
-  const me = meSelect.value;
-  const url = new URL(window.location.href);
-  url.searchParams.set("me", me);
-  await navigator.clipboard.writeText(url.toString());
-  out.innerHTML = `
-    <div class="result">
-      Link copied ✅<br/>
-      <span class="muted">${escapeHtml(url.toString())}</span>
+      <div class="muted">Deterministic from seed: <code>${escapeHtml(seed)}</code></div>
     </div>
   `;
 }
 
 document.getElementById("reveal").addEventListener("click", reveal);
-document.getElementById("reset").addEventListener("click", resetDevice);
-document.getElementById("copyLink").addEventListener("click", () => {
-  copyLinkForName().catch(() => alert("Could not copy. Please copy manually from the address bar."));
-});
-meSelect.addEventListener("change", () => {
-  setParam("me", meSelect.value);
-  out.innerHTML = "";
-});
 
-populate();
+populateNames();
 </script>
 </body>
 </html>
