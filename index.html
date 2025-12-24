@@ -17,8 +17,7 @@
     }
     h1 { font-size: 22px; margin: 0 0 8px; }
     p { margin: 8px 0 14px; line-height: 1.5; color: rgba(232,238,252,0.85); }
-    label { display: block; margin: 14px 0 8px; font-weight: 600; }
-    select, input, button {
+    button, input {
       width: 100%;
       padding: 12px;
       border-radius: 12px;
@@ -38,6 +37,13 @@
       border: 1px solid rgba(34,197,94,0.25);
     }
     .result strong { font-size: 18px; }
+    .danger {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 14px;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.25);
+    }
     .muted { color: rgba(232,238,252,0.7); font-size: 13px; margin-top: 10px; }
     code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 8px; }
   </style>
@@ -45,29 +51,26 @@
 <body>
   <div class="wrap">
     <div class="card">
-      <h1>🎁 Gift Shuffler (Hash-based)</h1>
-      <p>
-        Select <b>your name</b> and reveal your giftee.<br/>
-        The pairing is generated from a <b>seed</b> (hash), so it looks shuffled but stays consistent.
-      </p>
+      <h1>🎁 Gift Shuffler</h1>
+      <p id="intro"></p>
 
-      <label for="seed">Seed (change once to reshuffle, then keep fixed)</label>
-      <input id="seed" value="gift-2025" />
+      <!-- Optional PIN gate (turn on/off in JS) -->
+      <div id="pinBlock" style="display:none;">
+        <input id="pin" placeholder="Enter PIN" inputmode="numeric" />
+        <button id="unlock">Unlock</button>
+        <div class="muted">PIN is optional (set by organizer).</div>
+      </div>
 
-      <label for="me">Choose your name</label>
-      <select id="me"></select>
-
-      <button id="reveal">Reveal</button>
+      <button id="reveal" style="display:none;">Reveal my assigned person</button>
 
       <div id="out"></div>
 
-      <div class="muted">
-        Share the same site + same seed with everyone. Example seed: <code>gift-2025</code>
-      </div>
+      <div class="muted" id="hint"></div>
     </div>
   </div>
 
 <script>
+/** Your group */
 const NAMES = [
   "Duckchin",
   "Dheeksha",
@@ -76,6 +79,40 @@ const NAMES = [
   "Girish Annan Jerish",
   "Mohini"
 ];
+
+/**
+ * Seed controls the "shuffle".
+ * Keep this constant after sharing.
+ */
+const SEED_PHRASE = "gift-2025";
+
+/**
+ * Token mapping (what you put in the URL) -> actual name
+ * Keep tokens not-too-guessable.
+ */
+const TOKEN_TO_NAME = {
+  "dc9k2": "Duckchin",
+  "dh7p1": "Dheeksha",
+  "ap4q8": "Aparna",
+  "ri1m6": "Rishikesh",
+  "gj8t3": "Girish Annan Jerish",
+  "mo6v9": "Mohini"
+};
+
+/**
+ * OPTIONAL PIN protection:
+ * Set ENABLE_PIN = true and set per-name pin below.
+ * (Still frontend-only; prevents casual peeking, not perfect security.)
+ */
+const ENABLE_PIN = false;
+const NAME_TO_PIN = {
+  "Duckchin": "1111",
+  "Dheeksha": "2222",
+  "Aparna": "3333",
+  "Rishikesh": "4444",
+  "Girish Annan Jerish": "5555",
+  "Mohini": "6666"
+};
 
 // --- Seeded shuffle helpers (hash -> PRNG) ---
 function xmur3(str) {
@@ -109,16 +146,13 @@ function seededShuffle(arr, seedStr) {
   }
   return a;
 }
-
-// Build a unique 1-to-1 mapping using a single cycle from the shuffled list
 function buildMapping(seedStr) {
   const perm = seededShuffle(NAMES, seedStr);
   const mapping = {};
   for (let i = 0; i < perm.length; i++) {
     mapping[perm[i]] = perm[(i + 1) % perm.length];
   }
-
-  // Safety: ensure no one maps to self (extremely unlikely with cycle, but kept anyway)
+  // Safety (rare)
   for (let i = 0; i < perm.length; i++) {
     const n = perm[i];
     if (mapping[n] === n) {
@@ -131,43 +165,63 @@ function buildMapping(seedStr) {
   return mapping;
 }
 
-const meSelect = document.getElementById("me");
-const seedInput = document.getElementById("seed");
-const out = document.getElementById("out");
-
-function populateNames() {
-  meSelect.innerHTML = "";
-  for (const n of NAMES) {
-    const opt = document.createElement("option");
-    opt.value = n;
-    opt.textContent = n;
-    meSelect.appendChild(opt);
-  }
-}
-
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
-
-function reveal() {
-  const seed = seedInput.value.trim() || "gift-2025";
-  const me = meSelect.value;
-
-  const mapping = buildMapping(seed);
-  const assigned = mapping[me];
-
-  out.innerHTML = `
-    <div class="result">
-      You are <strong>${escapeHtml(me)}</strong> ✅<br/>
-      You should gift: <strong>${escapeHtml(assigned)}</strong> 🎁
-      <div class="muted">Deterministic from seed: <code>${escapeHtml(seed)}</code></div>
-    </div>
-  `;
+function getToken() {
+  return new URL(window.location.href).searchParams.get("t");
 }
 
-document.getElementById("reveal").addEventListener("click", reveal);
+// --- App logic ---
+const intro = document.getElementById("intro");
+const out = document.getElementById("out");
+const hint = document.getElementById("hint");
+const revealBtn = document.getElementById("reveal");
+const pinBlock = document.getElementById("pinBlock");
+const pinInput = document.getElementById("pin");
+const unlockBtn = document.getElementById("unlock");
 
-populateNames();
+const token = getToken();
+const name = token ? TOKEN_TO_NAME[token] : null;
+
+if (!token || !name) {
+  intro.innerHTML = `This link is missing/invalid.<br/>Ask the organizer for your personal link.`;
+  out.innerHTML = `<div class="danger">Invalid link. Example format: <code>?t=dc9k2</code></div>`;
+  hint.textContent = "";
+} else {
+  intro.innerHTML = `Hi <b>${escapeHtml(name)}</b> 👋<br/>Tap reveal to see who you should gift.`;
+
+  const mapping = buildMapping(SEED_PHRASE);
+  const assigned = mapping[name];
+
+  function showReveal() {
+    revealBtn.style.display = "block";
+    revealBtn.onclick = () => {
+      out.innerHTML = `
+        <div class="result">
+          You should gift: <strong>${escapeHtml(assigned)}</strong> 🎁
+        </div>
+      `;
+    };
+  }
+
+  if (ENABLE_PIN) {
+    pinBlock.style.display = "block";
+    unlockBtn.onclick = () => {
+      const ok = (pinInput.value || "").trim() === NAME_TO_PIN[name];
+      if (!ok) {
+        out.innerHTML = `<div class="danger">Wrong PIN.</div>`;
+        return;
+      }
+      pinBlock.style.display = "none";
+      showReveal();
+    };
+  } else {
+    showReveal();
+  }
+
+  hint.innerHTML = `This is your personal link. Don’t share it.`;
+}
 </script>
 </body>
 </html>
