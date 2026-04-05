@@ -1,227 +1,236 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Gift Shuffler</title>
-  <style>
-    :root { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; }
-    body { margin: 0; background: #0b1220; color: #e8eefc; }
-    .wrap { max-width: 720px; margin: 0 auto; padding: 28px 16px 48px; }
-    .card {
-      background: rgba(255,255,255,0.06);
-      border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 18px;
-      padding: 18px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.35);
-    }
-    h1 { font-size: 22px; margin: 0 0 8px; }
-    p { margin: 8px 0 14px; line-height: 1.5; color: rgba(232,238,252,0.85); }
-    button, input {
-      width: 100%;
-      padding: 12px;
-      border-radius: 12px;
-      border: 1px solid rgba(255,255,255,0.18);
-      background: rgba(0,0,0,0.25);
-      color: #e8eefc;
-      font-size: 15px;
-      outline: none;
-    }
-    button { margin-top: 12px; background: rgba(99, 102, 241, 0.9); border: 0; cursor: pointer; font-weight: 700; }
-    button:hover { filter: brightness(1.05); }
-    .result {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(34,197,94,0.12);
-      border: 1px solid rgba(34,197,94,0.25);
-    }
-    .result strong { font-size: 18px; }
-    .danger {
-      margin-top: 16px;
-      padding: 14px;
-      border-radius: 14px;
-      background: rgba(239,68,68,0.12);
-      border: 1px solid rgba(239,68,68,0.25);
-    }
-    .muted { color: rgba(232,238,252,0.7); font-size: 13px; margin-top: 10px; }
-    code { background: rgba(255,255,255,0.08); padding: 2px 6px; border-radius: 8px; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rishikesh N - The Engineer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="wrap">
-    <div class="card">
-      <h1>🎁 Gift Shuffler</h1>
-      <p id="intro"></p>
+<div class="bg-anim-injected" aria-hidden="true">
+  <div class="inj-orb inj-orb-1"></div>
+  <div class="inj-orb inj-orb-2"></div>
+  <div class="inj-orb inj-orb-3"></div>
+  <div class="inj-orb inj-orb-4"></div>
+</div>
 
-      <!-- Optional PIN gate (turn on/off in JS) -->
-      <div id="pinBlock" style="display:none;">
-        <input id="pin" placeholder="Enter PIN" inputmode="numeric" />
-        <button id="unlock">Unlock</button>
-        <div class="muted">PIN is optional (set by organizer).</div>
-      </div>
+    <div class="background-animation"></div>
 
-      <button id="reveal" style="display:none;">Reveal my assigned person</button>
-
-      <div id="out"></div>
-
-      <div class="muted" id="hint"></div>
-    </div>
-  </div>
-
-<script>
-/** Your group */
-const NAMES = [
-  "Duckchin",
-  "Dheeksha",
-  "Aparna",
-  "Rishikesh",
-  "Girish Annan Jerish",
-  "Mohini"
-];
-
-/**
- * Seed controls the "shuffle".
- * Keep this constant after sharing.
- */
-const SEED_PHRASE = "gift-2025";
-
-/**
- * Token mapping (what you put in the URL) -> actual name
- * Keep tokens not-too-guessable.
- */
-const TOKEN_TO_NAME = {
-  "dc9k2": "Duckchin",
-  "dh7p1": "Dheeksha",
-  "ap4q8": "Aparna",
-  "ri1m6": "Rishikesh",
-  "gj8t3": "Girish Annan Jerish",
-  "mo6v9": "Mohini"
-};
-
-/**
- * OPTIONAL PIN protection:
- * Set ENABLE_PIN = true and set per-name pin below.
- * (Still frontend-only; prevents casual peeking, not perfect security.)
- */
-const ENABLE_PIN = false;
-const NAME_TO_PIN = {
-  "Duckchin": "1111",
-  "Dheeksha": "2222",
-  "Aparna": "3333",
-  "Rishikesh": "4444",
-  "Girish Annan Jerish": "5555",
-  "Mohini": "6666"
-};
-
-// --- Seeded shuffle helpers (hash -> PRNG) ---
-function xmur3(str) {
-  let h = 1779033703 ^ str.length;
-  for (let i = 0; i < str.length; i++) {
-    h = Math.imul(h ^ str.charCodeAt(i), 3432918353);
-    h = (h << 13) | (h >>> 19);
-  }
-  return function() {
-    h = Math.imul(h ^ (h >>> 16), 2246822507);
-    h = Math.imul(h ^ (h >>> 13), 3266489909);
-    h ^= h >>> 16;
-    return h >>> 0;
-  };
-}
-function mulberry32(a) {
-  return function() {
-    let t = a += 0x6D2B79F5;
-    t = Math.imul(t ^ (t >>> 15), t | 1);
-    t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
-    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
-  };
-}
-function seededShuffle(arr, seedStr) {
-  const seed = xmur3(seedStr)();
-  const rand = mulberry32(seed);
-  const a = arr.slice();
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(rand() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-function buildMapping(seedStr) {
-  const perm = seededShuffle(NAMES, seedStr);
-  const mapping = {};
-  for (let i = 0; i < perm.length; i++) {
-    mapping[perm[i]] = perm[(i + 1) % perm.length];
-  }
-  // Safety (rare)
-  for (let i = 0; i < perm.length; i++) {
-    const n = perm[i];
-    if (mapping[n] === n) {
-      const swapWith = perm[(i + 1) % perm.length];
-      const tmp = mapping[n];
-      mapping[n] = mapping[swapWith];
-      mapping[swapWith] = tmp;
-    }
-  }
-  return mapping;
-}
-
-function escapeHtml(s) {
-  return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-}
-function getToken() {
-  return new URL(window.location.href).searchParams.get("t");
-}
-
-// --- App logic ---
-const intro = document.getElementById("intro");
-const out = document.getElementById("out");
-const hint = document.getElementById("hint");
-const revealBtn = document.getElementById("reveal");
-const pinBlock = document.getElementById("pinBlock");
-const pinInput = document.getElementById("pin");
-const unlockBtn = document.getElementById("unlock");
-
-const token = getToken();
-const name = token ? TOKEN_TO_NAME[token] : null;
-
-if (!token || !name) {
-  intro.innerHTML = `This link is missing/invalid.<br/>Ask the organizer for your personal link.`;
-  out.innerHTML = `<div class="danger">Invalid link. Example format: <code>?t=dc9k2</code></div>`;
-  hint.textContent = "";
-} else {
-  intro.innerHTML = `Hi <b>${escapeHtml(name)}</b> 👋<br/>Tap reveal to see who you should gift.`;
-
-  const mapping = buildMapping(SEED_PHRASE);
-  const assigned = mapping[name];
-
-  function showReveal() {
-    revealBtn.style.display = "block";
-    revealBtn.onclick = () => {
-      out.innerHTML = `
-        <div class="result">
-          You should gift: <strong>${escapeHtml(assigned)}</strong> 🎁
+    <header>
+        <div class="container nav-content">
+            <a href="#" class="logo">RN</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#about">The Plan</a></li>
+                    <li><a href="#experience">Operations</a></li>
+                    <li><a href="#projects">Chronicles</a></li>
+                    <li><a href="#skills">Arsenal</a></li>
+                    <li><a href="mailto:rishikeshpandian53@gmail.com">Recruit Me</a></li>
+                </ul>
+            </nav>
+            <div class="hamburger">
+                <div class="line1"></div>
+                <div class="line2"></div>
+                <div class="line3"></div>
+            </div>
         </div>
-      `;
-    };
-  }
+    </header>
 
-  if (ENABLE_PIN) {
-    pinBlock.style.display = "block";
-    unlockBtn.onclick = () => {
-      const ok = (pinInput.value || "").trim() === NAME_TO_PIN[name];
-      if (!ok) {
-        out.innerHTML = `<div class="danger">Wrong PIN.</div>`;
-        return;
-      }
-      pinBlock.style.display = "none";
-      showReveal();
-    };
-  } else {
-    showReveal();
-  }
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1 class="hero-name">Rishikesh N</h1>
+                <p class="hero-tagline">Executing Flawless Digital Operations. I architect high-stakes, resilient backend systems that never fail the mission.</p>
+                <div class="contact-buttons">
+                    <a href="mailto:rishikeshpandian53@gmail.com" class="btn btn-primary">Join The Heist</a>
+                </div>
+                <div class="social-links">
+                    <a href="https://www.linkedin.com/in/rishikesh-n-4428a2176" target="_blank" title="LinkedIn">in</a>
+                    <a href="https://github.com/Rishikesh0005" target="_blank" title="GitHub">gh</a>
+                    <a href="#" target="_blank" title="Medium">md</a>
+                </div>
+            </div>
+        </section>
 
-  hint.innerHTML = `This is your personal link. Don’t share it.`;
-}
-</script>
+        <section id="about" class="reveal">
+            <div class="container">
+                <div class="inspiration-card tilt-card">
+                    <p class="label">✦ THE BLUEPRINT</p>
+                    <h3>The Method</h3>
+                    <p>This portfolio's design is inspired by the meticulous planning of a grand heist. The stark red and black palette represents the high-stakes environment and the precision required for a flawless execution. Every element is a piece of the plan, a visual metaphor for engineering robust, mission-critical systems that operate in the shadows with unwavering reliability.</p>
+                    <div class="design-tokens">
+                        <div class="token"><span class="color-dot" style="background-color: var(--accent);"></span> Crimson Red</div>
+                        <div class="token">Black Ops One / Roboto Mono</div>
+                        <div class="token">Flawless Execution</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="experience">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>Past Operations</h2>
+                    <p>Over 4.5 years of experience in executing mission-critical backend operations, leaving no trace behind.</p>
+                </div>
+                <div class="timeline">
+                    <div class="timeline-item reveal">
+                        <div class="timeline-content tilt-card">
+                            <h3>Lead Operative (SDE 3)</h3>
+                            <h4>Paypal, Bengaluru</h4>
+                            <div class="date">February 2025 — Present</div>
+                             <ul>
+                                <li>Infiltrated merchant systems by integrating Knot SDK for seamless one-click payment extraction.</li>
+                                <li>Executed a strategy that boosted PayPal Debit Card adoption by <strong class="stat-number" data-target="40">40</strong>% within target applications.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="timeline-item reveal">
+                        <div class="timeline-content tilt-card">
+                            <h3>Field Agent (Member Technical Staff)</h3>
+                            <h4>Zoho Corporation, Chennai</h4>
+                            <div class="date">December 2020 — January 2025</div>
+                            <ul>
+                                <li>Engineered a high-performance Cloud Reverse Proxy using Netty, fortifying our position on AWS.</li>
+                                <li>Increased system efficiency by <strong class="stat-number" data-target="80">80</strong>% via strategic client-side JavaScript injection for metadata extraction.</li>
+                                <li>Led the migration to HTTP/2, achieving a <strong class="stat-number" data-target="50">50</strong>% increase in network speed and performance.</li>
+                                <li>Deployed RabbitMQ for covert, asynchronous communication, eliminating redeployments for real-time updates.</li>
+                                <li>Neutralized false positive security alerts by <strong class="stat-number" data-target="25">25</strong>% by designing a new Peer Grouping analysis feature.</li>
+                                <li>Slashed ML model training time by <strong class="stat-number" data-target="30">30</strong>% by engineering an automated backend system for feature extraction.</li>
+                            </ul>
+                        </div>
+                    </div>
+                     <div class="timeline-item reveal">
+                        <div class="timeline-content tilt-card">
+                            <h3>Recruit (Project Analyst Trainee)</h3>
+                            <h4>Cognizant, Chennai</h4>
+                            <div class="date">January 2020 — May 2020</div>
+                             <ul>
+                                <li>Collaborated with senior agents within an Agile cell to neutralize bugs and test application features.</li>
+                                <li>Underwent intensive training in Core Java, HTML5, CSS3, JavaScript, MySQL, and Selenium Automated Testing.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="projects">
+            <div class="container">
+                <div class="section-header reveal">
+                    <h2>Heist Chronicles</h2>
+                    <p>A record of special operations and side-hustles, showcasing diverse tactics and technologies.</p>
+                </div>
+                <div class="projects-grid">
+                    <div class="project-card tilt-card reveal">
+                        <div class="card-thumb">[INTEL]</div>
+                        <h3>Operation: Market Intel</h3>
+                        <p>A microservices-based surveillance app that analyzes news sentiment for target stocks, providing actionable intel for financial strikes.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">Microservices</span>
+                            <span class="tech-tag">NLP</span>
+                        </div>
+                    </div>
+                    <div class="project-card tilt-card reveal">
+                         <div class="card-thumb">[GHOST]</div>
+                        <h3>Operation: Ghost Board</h3>
+                        <p>An interactive virtual whiteboard built with Python and OpenCV, enabling real-time covert planning and collaboration using computer vision.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Python</span>
+                            <span class="tech-tag">OpenCV</span>
+                        </div>
+                         <div class="project-links">
+                            <a href="https://github.com/Rishikesh0005/Vitural-White-board-Using-Opencv-Python" target="_blank" title="GitHub">gh</a>
+                        </div>
+                    </div>
+                     <div class="project-card tilt-card reveal">
+                        <div class="card-thumb">[PUPPETEER]</div>
+                        <h3>Operation: Marionette</h3>
+                        <p>An Augmented Reality concept using Arduino to manipulate computer games with physical sensors, creating an immersive control system.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Arduino</span>
+                            <span class="tech-tag">C++</span>
+                            <span class="tech-tag">AR</span>
+                        </div>
+                        <div class="project-links">
+                            <a href="https://www.youtube.com/watch?v=yFRmz9RDFgM" target="_blank" title="YouTube">yt</a>
+                        </div>
+                    </div>
+                     <div class="project-card tilt-card reveal">
+                         <div class="card-thumb">[RECRUITER]</div>
+                        <h3>Operation: Next Gen</h3>
+                        <p>Developed and delivered a game development course to recruit and train the next generation of operatives (school students).</p>
+                         <div class="project-tech">
+                            <span class="tech-tag">Education</span>
+                            <span class="tech-tag">GameDev</span>
+                        </div>
+                        <div class="project-links">
+                             <a href="https://www.youtube.com/watch?v=0chM4X9cXPg" target="_blank" title="YouTube">yt</a>
+                        </div>
+                    </div>
+                    <div class="project-card tilt-card reveal">
+                        <div class="card-thumb">[SURVEILLANCE]</div>
+                        <h3>Operation: Eagle Eye</h3>
+                        <p>A computer vision project for optically detecting object dimensions without a reference, applied to measuring rigid bone dimensions.</p>
+                        <div class="project-tech">
+                            <span class="tech-tag">Computer Vision</span>
+                            <span class="tech-tag">MedTech</span>
+                        </div>
+                    </div>
+                     <div class="project-card tilt-card reveal">
+                         <div class="card-thumb">[POWER]</div>
+                        <h3>Operation: Kinetic Charge</h3>
+                        <p>An innovative hardware project using piezoelectric transducers in shoes to generate and store untraceable electrical energy from movement.</p>
+                         <div class="project-tech">
+                            <span class="tech-tag">Hardware</span>
+                            <span class="tech-tag">Electronics</span>
+                            <span class="tech-tag">Energy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="skills">
+            <div class="container">
+                 <div class="section-header reveal">
+                    <h2>The Arsenal</h2>
+                    <p>The tools and weaponry for building impenetrable digital fortresses and executing flawless operations.</p>
+                </div>
+                <div class="skills-container reveal">
+                    <span class="skill-chip">Java</span> <span class="skill-chip">Python</span> <span class="skill-chip">JavaScript</span> <span class="skill-chip">Netty</span> <span class="skill-chip">SpringBoot</span> <span class="skill-chip">Node.js</span> <span class="skill-chip">Ember.js</span> <span class="skill-chip">HTML & CSS</span> <span class="skill-chip">PostgreSQL</span> <span class="skill-chip">MySQL</span> <span class="skill-chip">Redis</span> <span class="skill-chip">InfluxDB</span> <span class="skill-chip">Elastic Search</span> <span class="skill-chip">Docker</span> <span class="skill-chip">Cloud Computing</span> <span class="skill-chip">RabbitMQ</span> <span class="skill-chip">Git</span> <span class="skill-chip">Apache Tomcat</span> <span class="skill-chip">Nginx</span> <span class="skill-chip">Linux</span> <span class="skill-chip">Machine Learning</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="education">
+             <div class="container">
+                 <div class="section-header reveal">
+                    <h2>Training Grounds</h2>
+                </div>
+                <div class="education-item tilt-card reveal">
+                    <h3>Advanced Infiltration & Systems Engineering</h3>
+                    <h4>The Academy (Thiagarajar Collage of Engineering)</h4>
+                    <p>June 2016 — May 2020 | Graduated with 8.04 CGPA</p>
+                </div>
+             </div>
+        </section>
+
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 Rishikesh N. Executed with precision.</p>
+        </div>
+    </footer>
+
+    
+
+  <script src="script.js"></script>
 </body>
 </html>
