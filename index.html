@@ -3,115 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rishikesh N - The Engineer</title>
+    <title>Aparna Chandran | Architect & Project Manager</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Roboto+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cabinet+Grotesk:wght@700,800&family=General+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+
     
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="bg-anim-injected" aria-hidden="true">
-  <div class="inj-orb inj-orb-1"></div>
-  <div class="inj-orb inj-orb-2"></div>
-  <div class="inj-orb inj-orb-3"></div>
-  <div class="inj-orb inj-orb-4"></div>
-</div>
+    <div class="grain-overlay" aria-hidden="true"></div>
+    <div class="progress-bar" aria-hidden="true"></div>
 
-    <div class="background-animation"></div>
+    <div class="bg-layer" aria-hidden="true">
+        <div class="bg-orb bg-orb-1" data-speed="0.2"></div>
+        <div class="bg-orb bg-orb-2" data-speed="0.4"></div>
+        <div class="bg-orb bg-orb-3" data-speed="0.3"></div>
+        <div class="bg-orb bg-orb-4" data-speed="0.5"></div>
+    </div>
 
-    <header>
-        <div class="container nav-content">
-            <a href="#" class="logo">RN</a>
-            <nav>
-                <ul class="nav-links">
-                    <li><a href="#about">The Plan</a></li>
-                    <li><a href="#experience">Operations</a></li>
-                    <li><a href="#projects">Chronicles</a></li>
-                    <li><a href="#skills">Arsenal</a></li>
-                    <li><a href="mailto:rishikeshpandian53@gmail.com">Recruit Me</a></li>
-                </ul>
-            </nav>
-            <div class="hamburger">
-                <div class="line1"></div>
-                <div class="line2"></div>
-                <div class="line3"></div>
-            </div>
+    <nav>
+        <div class="logo">AC.</div>
+        <div class="nav-links">
+            <a href="#works" class="nav-link">Works</a>
+            <a href="#experience" class="nav-link">Experience</a>
+            <a href="#contact" class="nav-link">Contact</a>
         </div>
-    </header>
-
+    </nav>
+    
     <main>
         <section class="hero">
-            <div class="container">
-                <h1 class="hero-name">Rishikesh N</h1>
-                <p class="hero-tagline">Executing Flawless Digital Operations. I architect high-stakes, resilient backend systems that never fail the mission.</p>
-                <div class="contact-buttons">
-                    <a href="mailto:rishikeshpandian53@gmail.com" class="btn btn-primary">Join The Heist</a>
+            <div class="hero-depth-layers">
+                <div class="hero-layer hero-layer-1" data-speed="0.1"></div>
+                <div class="hero-layer hero-layer-2" data-speed="0.3"></div>
+                <div class="hero-layer hero-layer-3" data-speed="0.5"></div>
+                <div class="hero-layer hero-layer-4" data-speed="0.8"></div>
+            </div>
+            <div class="hero-content">
+                <p class="hero-role">Architect & Project Manager</p>
+                <div class="grad-text"><h1 class="hero-name">Aparna Chandran</h1></div>
+                <p class="hero-tagline">
+                    Crafting sustainable and impactful environments by bridging visionary design with meticulous project management.
+                </p>
+                <div class="hero-cta">
+                    <a href="#works" class="btn btn-primary">View My Work</a>
+                    <a href="mailto:abichandran018@gmail.com" class="btn btn-ghost">Get In Touch</a>
                 </div>
-                <div class="social-links">
-                    <a href="https://www.linkedin.com/in/rishikesh-n-4428a2176" target="_blank" title="LinkedIn">in</a>
-                    <a href="https://github.com/Rishikesh0005" target="_blank" title="GitHub">gh</a>
-                    <a href="#" target="_blank" title="Medium">md</a>
+            </div>
+            <div class="scroll-indicator" aria-hidden="true">
+                <span>Scroll</span>
+                <div></div>
+            </div>
+        </section>
+
+        <section class="stats-band">
+            <div class="container stats-grid">
+                <div class="stat-item reveal playful" data-delay="0.0s">
+                    <div class="stat-number">5</div>
+                    <div class="stat-label">Years of Experience</div>
+                </div>
+                <div class="stat-item reveal playful" data-delay="0.1s">
+                    <div class="stat-number" data-suffix="+">25</div>
+                    <div class="stat-label">Projects Delivered</div>
+                </div>
+                <div class="stat-item reveal playful" data-delay="0.2s">
+                    <div class="stat-number" data-suffix="K+">500</div>
+                    <div class="stat-label">SQ.FT. Designed</div>
+                </div>
+                <div class="stat-item reveal playful" data-delay="0.3s">
+                    <div class="stat-number" data-suffix="%">98</div>
+                    <div class="stat-label">Client Satisfaction</div>
                 </div>
             </div>
         </section>
 
-        <section id="about" class="reveal">
+        <section id="works">
             <div class="container">
-                <div class="inspiration-card tilt-card">
-                    <p class="label">✦ THE BLUEPRINT</p>
-                    <h3>The Method</h3>
-                    <p>This portfolio's design is inspired by the meticulous planning of a grand heist. The stark red and black palette represents the high-stakes environment and the precision required for a flawless execution. Every element is a piece of the plan, a visual metaphor for engineering robust, mission-critical systems that operate in the shadows with unwavering reliability.</p>
-                    <div class="design-tokens">
-                        <div class="token"><span class="color-dot" style="background-color: var(--accent);"></span> Crimson Red</div>
-                        <div class="token">Black Ops One / Roboto Mono</div>
-                        <div class="token">Flawless Execution</div>
+                <div class="section-heading reveal">
+                    <span class="section-label">Portfolio</span>
+                    <h2 class="section-title">Selected Works</h2>
+                </div>
+                <div class="works-grid">
+                    <div class="project-card featured tilt-card reveal playful" data-delay="0.1s">
+                        <div class="card-face card-front" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url(https://images.unsplash.com/photo-1618221195710-dd6b41fa2232?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200); ">
+                            <h3 class="project-title">Modern Residential Interior</h3>
+                            <p class="project-category">Interior Design</p>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>Residential Transformation</h3>
+                            <p>Engineered a complete interior overhaul for a 2,500 sq.ft. residence, boosting property value by 15%.</p>
+                            <div class="tech-list">
+                                <span class="tech-chip">Revit</span>
+                                <span class="tech-chip">Lumion</span>
+                                <span class="tech-chip">Photoshop</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card small tilt-card reveal playful" data-delay="0.2s">
+                        <div class="card-face card-front" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url(https://images.unsplash.com/photo-1596395910445-48b41315578a?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200); ">
+                            <h3 class="project-title">Commercial Retail Space</h3>
+                            <p class="project-category">Commercial Architecture</p>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>Retail Concept Store</h3>
+                            <p>Designed a 1,200 sq.ft. flagship store, optimizing customer flow and increasing footfall by 30%.</p>
+                            <div class="tech-list">
+                                <span class="tech-chip">AutoCAD</span>
+                                <span class="tech-chip">Sketchup</span>
+                                <span class="tech-chip">CostX</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="project-card small tilt-card reveal playful" data-delay="0.3s">
+                        <div class="card-face card-front" style="background-image: linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.7)), url(https://images.unsplash.com/photo-1558655146-d323c46b6413?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&w=1200); ">
+                            <h3 class="project-title">AR Design Visualization</h3>
+                            <p class="project-category">Digital Innovation</p>
+                        </div>
+                        <div class="card-face card-back">
+                            <h3>Augmented Reality Views</h3>
+                            <p>Pioneered an AR workflow for client presentations, reducing revision cycles by 40%.</p>
+                            <div class="tech-list">
+                                <span class="tech-chip">Navis Work</span>
+                                <span class="tech-chip">Revit</span>
+                                <span class="tech-chip">Lumion</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <section class="toolkit-section">
+            <div class="section-heading reveal">
+                <span class="section-label">Toolkit</span>
+                <h2 class="section-title">Design & Management Software</h2>
+            </div>
+            <div class="toolkit-marquee">
+                <div class="marquee-track">
+                    <div class="tool-card"><span>Autodesk Revit</span></div>
+                    <div class="tool-card"><span>AutoCAD</span></div>
+                    <div class="tool-card"><span>Lumion</span></div>
+                    <div class="tool-card"><span>Google Sketchup</span></div>
+                    <div class="tool-card"><span>Adobe Photoshop</span></div>
+                    <div class="tool-card"><span>Navis Work</span></div>
+                    <div class="tool-card"><span>CostX</span></div>
+                    <div class="tool-card"><span>Microsoft Project</span></div>
+                    <!-- Duplicate for infinite loop -->
+                    <div class="tool-card"><span>Autodesk Revit</span></div>
+                    <div class="tool-card"><span>AutoCAD</span></div>
+                    <div class="tool-card"><span>Lumion</span></div>
+                    <div class="tool-card"><span>Google Sketchup</span></div>
+                    <div class="tool-card"><span>Adobe Photoshop</span></div>
+                    <div class="tool-card"><span>Navis Work</span></div>
+                    <div class="tool-card"><span>CostX</span></div>
+                    <div class="tool-card"><span>Microsoft Project</span></div>
+                </div>
+            </div>
+        </section>
+        
         <section id="experience">
             <div class="container">
-                <div class="section-header reveal">
-                    <h2>Past Operations</h2>
-                    <p>Over 4.5 years of experience in executing mission-critical backend operations, leaving no trace behind.</p>
+                <div class="section-heading reveal">
+                    <span class="section-label">Career Path</span>
+                    <h2 class="section-title">Professional Experience</h2>
                 </div>
-                <div class="timeline">
-                    <div class="timeline-item reveal">
-                        <div class="timeline-content tilt-card">
-                            <h3>Lead Operative (SDE 3)</h3>
-                            <h4>Paypal, Bengaluru</h4>
-                            <div class="date">February 2025 — Present</div>
-                             <ul>
-                                <li>Infiltrated merchant systems by integrating Knot SDK for seamless one-click payment extraction.</li>
-                                <li>Executed a strategy that boosted PayPal Debit Card adoption by <strong class="stat-number" data-target="40">40</strong>% within target applications.</li>
-                            </ul>
+                <div class="experience-list">
+                     <div class="experience-item reveal">
+                        <div class="exp-header">
+                            <h3 class="exp-title">Project Manager</h3>
+                            <div class="exp-company">Tapper Interiors Ltd</div>
+                            <div class="exp-date">Nov 2023 — Dec 2023</div>
                         </div>
-                    </div>
-                    <div class="timeline-item reveal">
-                        <div class="timeline-content tilt-card">
-                            <h3>Field Agent (Member Technical Staff)</h3>
-                            <h4>Zoho Corporation, Chennai</h4>
-                            <div class="date">December 2020 — January 2025</div>
+                        <div class="exp-desc">
                             <ul>
-                                <li>Engineered a high-performance Cloud Reverse Proxy using Netty, fortifying our position on AWS.</li>
-                                <li>Increased system efficiency by <strong class="stat-number" data-target="80">80</strong>% via strategic client-side JavaScript injection for metadata extraction.</li>
-                                <li>Led the migration to HTTP/2, achieving a <strong class="stat-number" data-target="50">50</strong>% increase in network speed and performance.</li>
-                                <li>Deployed RabbitMQ for covert, asynchronous communication, eliminating redeployments for real-time updates.</li>
-                                <li>Neutralized false positive security alerts by <strong class="stat-number" data-target="25">25</strong>% by designing a new Peer Grouping analysis feature.</li>
-                                <li>Slashed ML model training time by <strong class="stat-number" data-target="30">30</strong>% by engineering an automated backend system for feature extraction.</li>
+                                <li>Directed visual display plan execution, managing teams to deliver high-impact interior schemes.</li>
+                                <li>Cultivated strong client cooperation, ensuring project alignment and satisfaction.</li>
+                                <li>Managed supplier contracts and procurement, optimizing cost and material delivery schedules.</li>
                             </ul>
                         </div>
                     </div>
-                     <div class="timeline-item reveal">
-                        <div class="timeline-content tilt-card">
-                            <h3>Recruit (Project Analyst Trainee)</h3>
-                            <h4>Cognizant, Chennai</h4>
-                            <div class="date">January 2020 — May 2020</div>
-                             <ul>
-                                <li>Collaborated with senior agents within an Agile cell to neutralize bugs and test application features.</li>
-                                <li>Underwent intensive training in Core Java, HTML5, CSS3, JavaScript, MySQL, and Selenium Automated Testing.</li>
+                    <div class="experience-item reveal">
+                        <div class="exp-header">
+                            <h3 class="exp-title">Project Manager</h3>
+                            <div class="exp-company">Women in Construction</div>
+                            <div class="exp-date">Oct 2022 — Nov 2023</div>
+                        </div>
+                        <div class="exp-desc">
+                            <ul>
+                                <li>Achieved multiple NOCN certifications, demonstrating expertise in construction skills, safety, and environmental awareness.</li>
+                                <li>Managed on-site equipment and materials, ensuring resource availability and project continuity.</li>
+                                <li>Enforced strict compliance with safety regulations, maintaining a zero-incident work environment.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="experience-item reveal">
+                        <div class="exp-header">
+                            <h3 class="exp-title">Junior Architect</h3>
+                            <div class="exp-company">Pacific Land Promotors and Construction</div>
+                            <div class="exp-date">Jun 2020 — Feb 2021</div>
+                        </div>
+                        <div class="exp-desc">
+                            <ul>
+                                <li>Engineered comprehensive construction documents using AutoCAD and Revit for residential and commercial projects.</li>
+                                <li>Spearheaded client consultations to define project necessities, translating needs into actionable design concepts.</li>
+                                <li>Delivered compelling design proposals and feasibility reports, securing client approval and project buy-in.</li>
+                                <li>Conducted rigorous site visits to monitor progress, ensuring projects met strict timeline and budget constraints.</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="experience-item reveal">
+                        <div class="exp-header">
+                            <h3 class="exp-title">Freelance Architect</h3>
+                            <div class="exp-company">Self-Employed</div>
+                            <div class="exp-date">Dec 2019 — Jun 2020</div>
+                        </div>
+                        <div class="exp-desc">
+                            <ul>
+                                <li>Collaborated with engineers to integrate Augmented Reality visualizations into residential design presentations.</li>
+                                <li>Designed innovative floor plans and interiors for diverse residential and commercial clients.</li>
+                                <li>Produced detailed working drawings and high-fidelity 3D renderings using SketchUp and Lumion.</li>
                             </ul>
                         </div>
                     </div>
@@ -119,118 +230,45 @@
             </div>
         </section>
 
-        <section id="projects">
+        <section id="education" style="background: var(--alt);">
             <div class="container">
-                <div class="section-header reveal">
-                    <h2>Heist Chronicles</h2>
-                    <p>A record of special operations and side-hustles, showcasing diverse tactics and technologies.</p>
+                <div class="section-heading reveal">
+                    <span class="section-label">Foundation</span>
+                    <h2 class="section-title">Education & Credentials</h2>
                 </div>
-                <div class="projects-grid">
-                    <div class="project-card tilt-card reveal">
-                        <div class="card-thumb">[INTEL]</div>
-                        <h3>Operation: Market Intel</h3>
-                        <p>A microservices-based surveillance app that analyzes news sentiment for target stocks, providing actionable intel for financial strikes.</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Python</span>
-                            <span class="tech-tag">Microservices</span>
-                            <span class="tech-tag">NLP</span>
-                        </div>
+                <div class="education-grid">
+                    <div class="education-item reveal-scale playful">
+                        <h3 class="edu-degree">M.Sc Project Management in Built Environment</h3>
+                        <p class="edu-school">Oxford Brookes University</p>
+                        <p class="edu-date">2021 — 2022</p>
                     </div>
-                    <div class="project-card tilt-card reveal">
-                         <div class="card-thumb">[GHOST]</div>
-                        <h3>Operation: Ghost Board</h3>
-                        <p>An interactive virtual whiteboard built with Python and OpenCV, enabling real-time covert planning and collaboration using computer vision.</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Python</span>
-                            <span class="tech-tag">OpenCV</span>
-                        </div>
-                         <div class="project-links">
-                            <a href="https://github.com/Rishikesh0005/Vitural-White-board-Using-Opencv-Python" target="_blank" title="GitHub">gh</a>
-                        </div>
-                    </div>
-                     <div class="project-card tilt-card reveal">
-                        <div class="card-thumb">[PUPPETEER]</div>
-                        <h3>Operation: Marionette</h3>
-                        <p>An Augmented Reality concept using Arduino to manipulate computer games with physical sensors, creating an immersive control system.</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Arduino</span>
-                            <span class="tech-tag">C++</span>
-                            <span class="tech-tag">AR</span>
-                        </div>
-                        <div class="project-links">
-                            <a href="https://www.youtube.com/watch?v=yFRmz9RDFgM" target="_blank" title="YouTube">yt</a>
-                        </div>
-                    </div>
-                     <div class="project-card tilt-card reveal">
-                         <div class="card-thumb">[RECRUITER]</div>
-                        <h3>Operation: Next Gen</h3>
-                        <p>Developed and delivered a game development course to recruit and train the next generation of operatives (school students).</p>
-                         <div class="project-tech">
-                            <span class="tech-tag">Education</span>
-                            <span class="tech-tag">GameDev</span>
-                        </div>
-                        <div class="project-links">
-                             <a href="https://www.youtube.com/watch?v=0chM4X9cXPg" target="_blank" title="YouTube">yt</a>
-                        </div>
-                    </div>
-                    <div class="project-card tilt-card reveal">
-                        <div class="card-thumb">[SURVEILLANCE]</div>
-                        <h3>Operation: Eagle Eye</h3>
-                        <p>A computer vision project for optically detecting object dimensions without a reference, applied to measuring rigid bone dimensions.</p>
-                        <div class="project-tech">
-                            <span class="tech-tag">Computer Vision</span>
-                            <span class="tech-tag">MedTech</span>
-                        </div>
-                    </div>
-                     <div class="project-card tilt-card reveal">
-                         <div class="card-thumb">[POWER]</div>
-                        <h3>Operation: Kinetic Charge</h3>
-                        <p>An innovative hardware project using piezoelectric transducers in shoes to generate and store untraceable electrical energy from movement.</p>
-                         <div class="project-tech">
-                            <span class="tech-tag">Hardware</span>
-                            <span class="tech-tag">Electronics</span>
-                            <span class="tech-tag">Energy</span>
-                        </div>
+                    <div class="education-item reveal-scale playful" data-delay="0.1s">
+                        <h3 class="edu-degree">Bachelor of Architecture</h3>
+                        <p class="edu-school">SRM Institute Of Science & Technology</p>
+                        <p class="edu-date">2015 — 2020</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section id="skills">
+        <section id="contact" class="contact-section">
             <div class="container">
-                 <div class="section-header reveal">
-                    <h2>The Arsenal</h2>
-                    <p>The tools and weaponry for building impenetrable digital fortresses and executing flawless operations.</p>
-                </div>
-                <div class="skills-container reveal">
-                    <span class="skill-chip">Java</span> <span class="skill-chip">Python</span> <span class="skill-chip">JavaScript</span> <span class="skill-chip">Netty</span> <span class="skill-chip">SpringBoot</span> <span class="skill-chip">Node.js</span> <span class="skill-chip">Ember.js</span> <span class="skill-chip">HTML & CSS</span> <span class="skill-chip">PostgreSQL</span> <span class="skill-chip">MySQL</span> <span class="skill-chip">Redis</span> <span class="skill-chip">InfluxDB</span> <span class="skill-chip">Elastic Search</span> <span class="skill-chip">Docker</span> <span class="skill-chip">Cloud Computing</span> <span class="skill-chip">RabbitMQ</span> <span class="skill-chip">Git</span> <span class="skill-chip">Apache Tomcat</span> <span class="skill-chip">Nginx</span> <span class="skill-chip">Linux</span> <span class="skill-chip">Machine Learning</span>
-                </div>
+                <a href="mailto:abichandran018@gmail.com" class="interactive-email">
+                    <div class="contact-glow"></div>
+                    <span class="email-top">Let's</span>
+                    <span class="email-bottom">Talk</span>
+                    <div class="contact-cta-button">
+                        <span class="btn btn-primary">abichandran018@gmail.com</span>
+                    </div>
+                </a>
             </div>
         </section>
-
-        <section id="education">
-             <div class="container">
-                 <div class="section-header reveal">
-                    <h2>Training Grounds</h2>
-                </div>
-                <div class="education-item tilt-card reveal">
-                    <h3>Advanced Infiltration & Systems Engineering</h3>
-                    <h4>The Academy (Thiagarajar Collage of Engineering)</h4>
-                    <p>June 2016 — May 2020 | Graduated with 8.04 CGPA</p>
-                </div>
-             </div>
-        </section>
-
     </main>
-    
-    <footer>
-        <div class="container">
-            <p>&copy; 2024 Rishikesh N. Executed with precision.</p>
-        </div>
-    </footer>
+
+    <div class="custom-cursor-outer"></div>
+    <div class="custom-cursor-inner"></div>
 
     
-
   <script src="script.js"></script>
 </body>
 </html>
